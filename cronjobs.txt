@@ -1,0 +1,9 @@
+52 20 * * * scrapy crawl pdfurl >> scraping_pdf_url_log.txt 2>&1
+0 */6 * * * scrapy crawl proyecto >> scraping_proyecto.log.txt 2>&1
+0 3 * * 2   scrapy crawl seguimientos >> scraping_seguimientos.log.txt 2>&1
+0 3 * * 3   scrapy crawl iniciativa >> scraping_iniciativas.log.txt 2>&1
+0 3 * * 4   scrapy crawl updater >> scraping_updater.log.txt 2>&1
+0 3 * * 5   scrapy crawl expediente >> scraping_expediente.log.txt 2>&1
+0 6 * * * python proyectos_de_ley/manage.py update_index --age=24 --settings=proyectos_de_ley.settings.production   >> updating_index.log.txt 2>&1
+0 8 * * 1 python proyectos_de_ley/manage.py create_congress_person_slugs --settings=proyectos_de_ley.settings.production   >> updating_slugs.log.txt 2>&1
+0 8 * * 2 python proyectos_de_ley/manage.py create_ascii_names_for_congress_person --settings=proyectos_de_ley.settings.production

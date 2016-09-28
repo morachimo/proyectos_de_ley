@@ -33,5 +33,8 @@ class CongresistaSitemap(Sitemap):
         return datetime.datetime.today()
 
     def location(self, item):
-        loc = '/congresista/' + item.slug
+        if not item.slug:
+            loc = '/congresista/'
+        else:
+            loc = '/congresista/' + item.slug
         return loc

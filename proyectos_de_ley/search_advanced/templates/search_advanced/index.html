@@ -1,4 +1,5 @@
 {% extends "pdl/base.html" %}
+{% load humanize %}
 
 
 {% block additional_head_javascript %}
@@ -19,21 +20,41 @@
 
 {% block content %}
 <div class="container">
-  {% if not items %}
+  {% if not items and not items_previous_legislatures %}
   <div class="row">
     <div class="col-xs-12">
       <h1 style="padding-bottom:30px;" class="text-center">Búsqueda avanzada</h1>
     </div>
   </div>
+
+
+<form method="get" action="/search-advanced/" class="form-inline" role="form">
+
+  {% if info_msg %}
+    <div class="row">
+      <div class="col-lg-10 col-md-11 col-xs-12">
+          <h3 class="bg-danger" style="padding: 10px;">{{ info_msg }}</h3>
+      </div><!-- col -->
+    </div><!-- row -->
   {% endif %}
+
+  <div class="row">
+    <div class="col-lg-3 col-md-4 col-sm-3">
+      <h4>Palabra clave</h4>
+    </div>
+
+    <div class="col-lg-9 col-md-7 col-xs-6">
+      {{ form.query }} 
+    </div><!-- col -->
+  </div><!-- row -->
 
 
   <div class="row">
     <div class="col-lg-3 col-md-4 col-sm-3">
       <h4>Por fecha de presentación</h4>
     </div>
-    <div class="col-lg-9 col-md-7 col-xs-6">
-      <form method="get" action="/search-advanced/" class="form-inline" role="form">
+
+    <div class="col-lg-4 col-md-4 col-xs-6">
         {{ form.non_field_errors }}
 
         {% if form.date_from.errors %}
@@ -65,23 +86,78 @@
           {% endif %}
         </div>
 
-        <div class="form-group">
-          <button type="submit" class="btn btn-info" id="search_button">
-              <span class="glyphicon glyphicon-search"></span>
-              Buscar
-          </button>
-        </div>
-      </form>
     </div><!-- col -->
-
   </div><!-- row -->
 
 
+  <div class="row">
+    <div class="col-lg-3 col-md-4 col-sm-3">
+      <h4>Por comisiones</h4>
+    </div>
+
+    <div class="col-lg-9 col-md-7 col-xs-6">
+      {{ form.comision }} 
+    </div><!-- col -->
+  </div><!-- row -->
+
+
+  <div class="row">
+    <div class="col-lg-3 col-md-4 col-sm-3">
+      <h4>Por congresista</h4>
+    </div>
+
+    <div class="col-lg-9 col-md-7 col-xs-6">
+      {{ form.congresista }} 
+    </div><!-- col -->
+  </div><!-- row -->
+
+
+  <div class="row">
+    <div class="col-lg-3 col-md-4 col-sm-3">
+      <h4>Por grupo parlamentario</h4>
+    </div>
+
+    <div class="col-lg-9 col-md-7 col-xs-6">
+      {{ form.grupo_parlamentario }} 
+    </div><!-- col -->
+  </div><!-- row -->
+
+
+  <div class="row">
+    <div class="col-lg-3 col-md-4 col-sm-3 col-sm-offset-3">
+      <div class="form-group">
+        <br />
+        <button type="submit" class="btn btn-info" id="search_button">
+          <span class="glyphicon glyphicon-search"></span>
+          Buscar
+        </button>
+      </div>
+    </div><!-- col -->
+  </div><!-- row -->
+
+
+
+</form>
+
+  {% endif %}
+
 </div>
 
-{% if items %}
+{% if items or items_previous_legislatures %}
   <div id="contenido" class="container">
-    <h1>Resultados de búsqueda:</h1>
+    <h1>Resultados de búsqueda: <small>{{ extra_result_msg }} {{ result_count|intcomma }}</small><br />
+      <small>Legislatura 2016</small>
+    </h1>
+
+    {% if items_previous_legislatures %}
+    <p>
+      Se encontraron proyectos en
+      <a href="/listado?keywords={{ query|safe }}&list={{ items_previous_legislatures }}">
+        previas legislaturas
+      </a>
+    </p>
+    {% endif %}
+
     {% if results == 'No se encontraron resultados.' %}
       <h2>{{ results }}</h2>
     {% else %}

@@ -50,7 +50,7 @@
       </div><!-- panel -->
       {% endif %}
 
-      {% if item.iniciativas_agrupadas|length > 1 %}
+      {% if item.iniciativas_agrupadas|length > 0 %}
       <div class="panel panel-default">
         <div class="panel-heading">
           <b>Iniciativas agrupadas</b>
@@ -179,12 +179,13 @@
 
 
 {% block additional_javascript %}
-<script type="text/javascript" src="http://cdn.knightlab.com/libs/timeline/latest/js/storyjs-embed.js"></script>
+{% load staticfiles %}
+<script type="text/javascript" src="{% static 'js/storyjs-embed.js' %}"></script>
 
 <script>
-$.getJSON("/api/iniciativas/{{ item.short_url }}", function(data) {
+$.getJSON("/api/iniciativas.json/{{ friendly_code }}", function(data) {
     var items = [];
-    $.each(data.nodes, function(k, v) {
+    $.each(data.iniciativas, function(k, v) {
         items.push("<a href='" + v.url + "' title='Proyecto " + v.codigo + "'>" + v.codigo + "</a>")
     });
     $("#iniciativas").append(items.join(", "));
@@ -193,7 +194,7 @@ $.getJSON("/api/iniciativas/{{ item.short_url }}", function(data) {
 
 <script>
 $(document).ready(function() {
-  $.getJSON("/api/seguimientos/{{ item.short_url }}", function(data) {
+  $.getJSON("/api/seguimientos.json/{{ friendly_code }}", function(data) {
     createStoryJS({
         type:       'timeline',
         width:      '100%',

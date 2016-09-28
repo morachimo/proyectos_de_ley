@@ -12,7 +12,6 @@ from pdl import views
 from pdl import utils
 from pdl.models import Proyecto
 from pdl.models import Slug
-from pdl.models import Seguimientos
 from stats.models import Dispensed
 
 
@@ -60,7 +59,7 @@ class SimpleTest(TestCase):
         prettified_file = os.path.join(this_folder, 'prettified_03774.txt')
         with open(prettified_file, "r") as f:
             prettified_item = f.read()
-        item = self.dummy_items[0]
+        item = self.dummy_items[1]
 
         # save it to test database
         b = Proyecto(**item)
@@ -76,7 +75,7 @@ class SimpleTest(TestCase):
         prettified_file = os.path.join(this_folder, 'prettified_03774_2.txt')
         with open(prettified_file, "r") as f:
             prettified_item = f.read()
-        item = self.dummy_items[0]
+        item = self.dummy_items[1]
         item['pdf_url'] = ''
         item['expediente'] = ''
         item['seguimiento_page'] = ''
@@ -95,7 +94,7 @@ class SimpleTest(TestCase):
                                        'prettified_03774_small.txt')
         with open(prettified_file, "r") as f:
             prettified_item = f.read()
-        item = self.dummy_items[0]
+        item = self.dummy_items[1]
 
         # save it to test database
         b = Proyecto(**item)
@@ -139,7 +138,7 @@ class SimpleTest(TestCase):
         self.assertEqual(expected, result)
 
     def test_proyecto_view(self):
-        i = self.dummy_items[0]
+        i = self.dummy_items[1]
         b = Proyecto(**i)
         b.save()
 
@@ -147,6 +146,7 @@ class SimpleTest(TestCase):
         response = c.get('/p/4aw8ym/')
         soup = BeautifulSoup(response.content)
         result = soup.title.get_text().strip()
+        print(result)
         expected = 'Proyectos de ley emitidos por el Congreso | 03774/2014-CR'
         self.assertEqual(expected, result)
 
@@ -199,7 +199,6 @@ class SimpleTest(TestCase):
         Proyecto.objects.bulk_create(entries)
         response = c.get('/?page=21')
         self.assertFalse(b'/?page=10' in response.content)
-        self.assertTrue(b'/?page=22' in response.content)
 
     def test_congresista_view_pagination(self):
         entries = []
@@ -213,30 +212,6 @@ class SimpleTest(TestCase):
         c = Client()
         response = c.get('/congresista/dammert_ego_aguirre/?page=2')
         self.assertTrue(b'endless_page_link' in response.content)
-
-    def test_sanitize(self):
-        mystring = "'/\\*% a e "
-        expected = ''
-        result = views.sanitize(mystring)
-        self.assertEqual(expected, result)
-
-    def test_find_in_db(self):
-        # save item to test database
-        item = self.dummy_items[0]
-        b = Proyecto(**item)
-        b.save()
-
-        s = Seguimientos(fecha='2012-10-13', evento='Evento1 03774', proyecto_id=3763)
-        s.save()
-
-        # now get it as QuerySet object
-        items = views.find_in_db(query='03774')
-        result = items[0]
-        self.assertEqual('03774', result.codigo)
-
-        # find elements not in our database
-        result = views.find_in_db(query='037741111111111111111111111111111')
-        self.assertEqual("No se encontraron resultados.", result)
 
     def test_find_slug_in_db(self):
         item = self.dummy_items[0]
@@ -271,23 +246,14 @@ class SimpleTest(TestCase):
         self.assertEqual(302, response.status_code)
 
     def test_search2(self):
-        """Search attempt is redirected to index."""
+        """Search attempt returns page with no result."""
         query = "'*;/"
         c = Client()
         response = c.get('/search/?q=' + query)
-        self.assertEqual(302, response.status_code)
+        self.assertTrue('No se encontraron resultados' in str(response.content))
 
-    def test_search3(self):
-        query = "propone"
+    def test_search_empty_query(self):
+        query = " "
         c = Client()
         response = c.get('/search/?q=' + query)
-        self.assertEqual(200, response.status_code)
-
-        # save item to test database
-        item = self.dummy_items[0]
-        b = Proyecto(**item)
-        b.save()
-        response = c.get('/search/?q=' + query)
-        self.assertTrue(b'Propone establecer los lineamientos para la' in
-                        response.content
-                        )
+        self.assertEqual(302, response.status_code)

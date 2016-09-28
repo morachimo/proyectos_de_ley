@@ -2,17 +2,15 @@ import datetime
 import re
 import time
 import unicodedata
-from functools import reduce
-from itertools import chain
 
 import arrow
-from django.db.models import Q
+
+from django.conf import settings
 from django.core.paginator import Paginator
 from django.core.paginator import EmptyPage
 from django.core.paginator import PageNotAnInteger
 
 from pdl.models import Proyecto
-from pdl.models import Seguimientos
 from pdl.models import Slug
 
 
@@ -110,7 +108,6 @@ def hiperlink_congre(congresistas):
     congresistas = congresistas.replace("; ", ";\n")
     return congresistas
 
-
 def convert_name_to_slug(name):
     """Takes a congresista name and returns its slug."""
     name = name.strip()
@@ -130,15 +127,22 @@ def convert_name_to_slug(name):
         return slug + "/"
 
 
-def do_pagination(request, all_items, search=False):
+def do_pagination(request, all_items, search=False, advanced_search=None):
     """
     :param request: contains the current page requested by user
     :param all_items:
     :param search: if search is False items will be prettified in long form.
            if search is True then items will be prettified as small items
            for search results.
+    :param advanced_search: True or None to point out that we come from the
+           advanced search page.
     :return: dict containing paginated items and pagination bar
     """
+    if 'comision' in request.GET and request.GET['comision'] != '':
+        comision = request.GET['comision']
+    else:
+        comision = False
+
     if search is False:
         paginator = Paginator(all_items, 20)
     else:
@@ -163,7 +167,12 @@ def do_pagination(request, all_items, search=False):
         if search is False:
             pretty_items.append(prettify_item(i))
         else:
-            pretty_items.append(prettify_item_small(i))
+            if settings.TESTING:
+                pretty_items.append(prettify_item_small(i))
+            elif advanced_search is True:
+                pretty_items.append(prettify_item_small(i))
+            else:
+                pretty_items.append(prettify_item_small(i.object))
 
     if cur > 20:
         first_half = range(cur - 10, cur)
@@ -187,83 +196,22 @@ def do_pagination(request, all_items, search=False):
         "first_page": paginator.page_range[0],
         "last_page": paginator.page_range[-1],
         "current": cur,
+        "comision": comision,
     }
     return obj
-
-
-def find_in_db(query):
-    """
-    Finds items according to user search.
-
-    :param query: user's keyword
-    :return: QuerySet object with items or string if no results were found.
-    """
-    keywords = query.strip().split(" ")
-    with Timer() as t:
-        proyecto_items = Proyecto.objects.filter(
-            reduce(lambda x, y: x | y, [Q(short_url__icontains=word) for word in keywords]) |
-            reduce(lambda x, y: x | y, [Q(codigo__icontains=word) for word in keywords]) |
-            reduce(lambda x, y: x | y, [Q(numero_proyecto__icontains=word) for word in keywords]) |
-            reduce(lambda x, y: x & y, [Q(titulo__icontains=word) for word in keywords]) |
-            reduce(lambda x, y: x & y, [Q(congresistas__icontains=word) for word in keywords]),
-            # reduce(lambda x, y: x | y, [Q(expediente__icontains=word) for word in keywords]) |
-            # Q(pdf_url__icontains=query) |
-            # Q(seguimiento_page__icontains=query),
-        ).order_by('-codigo')
-    # print("=> elasped lpop: %s s" % t.secs)
-
-    seguimientos = Seguimientos.objects.filter(
-        reduce(lambda x, y: x & y, [Q(evento__icontains=word) for word in keywords]),
-    )
-    seguimientos = set(seguimientos)
-
-    if seguimientos:
-        proyectos_id = [i.proyecto_id for i in seguimientos]
-        more_items = Proyecto.objects.filter(
-            reduce(lambda x, y: x | y, [Q(id__exact=id) for id in proyectos_id]),
-        )
-        items = sorted(chain.from_iterable([proyecto_items, more_items]), key=lambda instance: instance.codigo,
-                       reverse=True)
-    else:
-        items = proyecto_items
-
-    if len(items) > 0:
-        results = items
-    else:
-        results = "No se encontraron resultados."
-    return results
 
 
 def find_slug_in_db(congresista_slug):
     try:
         item = Slug.objects.get(slug=congresista_slug)
-        return item.nombre
+        return item.ascii
     except Slug.DoesNotExist:
         try:
             congresista_slug += '/'
             item = Slug.objects.get(slug=congresista_slug)
-            return item.nombre
+            return item.ascii
         except Slug.DoesNotExist:
             return None
-
-
-def sanitize(s):
-    s = s.replace("'", "")
-    s = s.replace('"', "")
-    s = s.replace("/", "")
-    s = s.replace("\\", "")
-    s = s.replace(";", "")
-    s = s.replace("=", "")
-    s = s.replace("*", "")
-    s = s.replace("%", "")
-    new_s = []
-    append = new_s.append
-    for i in s.split(" "):
-        if len(i.strip()) > 2:
-            append(i)
-    new_s = " ".join(new_s)
-    new_s = re.sub("\s+", " ", new_s)
-    return new_s
 
 
 def get_last_items():

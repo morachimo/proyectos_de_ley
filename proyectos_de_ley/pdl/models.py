@@ -1,15 +1,25 @@
+import unicodedata
+
 from django.db import models
 
 
 # Create your models here.
 class Proyecto(models.Model):
     codigo = models.CharField(max_length=20)
+    legislatura = models.IntegerField()  # e.g. 2011, 2016
     numero_proyecto = models.CharField(max_length=50)
     short_url = models.CharField(max_length=20)
     congresistas = models.TextField(blank=True)
+    congresistas_ascii = models.TextField(
+        blank=True,
+        help_text="Congress data is not 100% consistent in names and in some "
+                  "projects the names come with full accents or sometimes "
+                  "some are missing. It is better to compare them by using "
+                  "the ascii form of their names."
+    )
 
     # migrate from date as string
-    fecha_presentacion = models.DateField(blank=True)
+    fecha_presentacion = models.DateField(null=False)
     titulo = models.TextField(blank=True)
     expediente = models.URLField(max_length=200, blank=True)
     pdf_url = models.URLField(max_length=200, blank=True)
@@ -20,13 +30,12 @@ class Proyecto(models.Model):
     time_edited = models.DateTimeField(auto_now=True)
 
     # > v1.1.1
-    proponente = models.CharField(max_length=250, blank=True, default='')
-    grupo_parlamentario = models.CharField(max_length=250, blank=True,
-                                           default='')
-    iniciativas_agrupadas = models.TextField(blank=True, default='')
-    nombre_comision = models.CharField(max_length=250, blank=True, default='')
-    titulo_de_ley = models.TextField(blank=True, default='')
-    numero_de_ley = models.CharField(max_length=200, blank=True, default='')
+    proponente = models.TextField(null=True, blank=True, default='')
+    grupo_parlamentario = models.TextField(blank=True, default='')
+    iniciativas_agrupadas = models.TextField(null=True, blank=True, default='')
+    nombre_comision = models.TextField(null=True, blank=True, default='')
+    titulo_de_ley = models.TextField(null=True, blank=True, default='')
+    numero_de_ley = models.TextField(null=True, blank=True, default='')
 
 
 class Seguimientos(models.Model):
@@ -52,6 +61,23 @@ class Expedientes(models.Model):
 
 class Slug(models.Model):
     """A translation table between a Congresista name and a slug to be used
-    as hiperlink."""
+    as hyperlink."""
     nombre = models.CharField(max_length=200)
+    ascii = models.CharField(
+        max_length=200,
+        help_text='nombre sin caracteres escpeciales',
+    )
     slug = models.CharField(max_length=100)
+
+    def save(self, *args, **kwargs):
+        self.ascii = self.convert_to_ascii()
+        super(Slug, self).save(*args, **kwargs)
+
+    def convert_to_ascii(self):
+        return unicodedata.normalize(
+            'NFKD',
+            self.nombre,
+        ).encode('ascii', 'ignore').decode('utf-8')
+
+    def __str__(self):
+        return self.nombre

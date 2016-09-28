@@ -24,14 +24,16 @@
 {% load humanize %}
 {% block content %}
 <div class="container">
-  <h1 id="proyectos_de_ley">Situación de los proyectos de ley (Legislatura 2011&mdash;2016)</h1>
+  <h1 id="proyectos_de_ley">Situación de los proyectos de ley (Legislatura 2016&mdash;2021)</h1>
   <hr>
-  <h3>Número total de proyectos de ley:
-    <a href="/">{{ numero_de_proyectos|intcomma }}</a></h3>
 </div>
+
+{% include 'stats/explanation.html'  %}
 
 <div id="contenido" class="container">
   <div class="container">
+    <h3>Número total de proyectos de ley:
+      <a href="/">{{ numero_de_proyectos|intcomma }}</a></h3>
 
     <div id="g1"></div>
     <div id="g2"></div>
@@ -43,10 +45,13 @@
   <div class="container">
     <div class="row">
       <div class="col-lg-4 col-md-5 col-sm-6 col-xs-7">
-        <div id="comisiones_chart" style="width:350px; height:620px;"></div>
+        <div id="comisiones_chart" style="width:350px; height:660px;"></div>
       </div>
       <div class="col-lg-4 col-md-5 col-sm-6 col-xs-7">
         <div id="dispensed_chart" style="width:350px; height:400px;"></div>
+      </div>
+      <div class="col-lg-4 col-md-5 col-sm-6 col-xs-7">
+        <div id="dictamen_chart" style="width:350px; height:400px;"></div>
       </div>
     </div><!-- row -->
   </div><!-- container -->
@@ -68,7 +73,10 @@ $(function () {
             type: 'bar'
         },
         title: {
-            text: 'Proyectos en comisiones'
+            text: 'Proyectos actualmente en comisiones'
+        },
+        subtitle: {
+            text: 'Hacer click sobre las barras para ver los proyectos'
         },
         xAxis: {
             categories: {{ comision_names|safe }}
@@ -83,6 +91,18 @@ $(function () {
         },
          tooltip: {
             pointFormat: '{point.y} proyectos'
+        },
+        plotOptions: {
+            series: {
+                cursor: 'pointer',
+                point: {
+                    events: {
+                        click: function () {
+                            location.href = '/search-advanced/?comision=' + this.category;
+                        }
+                    }
+                }
+            }
         },
         series: [
         {
@@ -121,7 +141,22 @@ $(function () {
             enabled: false
         },
          tooltip: {
+            positioner: function () {
+                return { x: 150, y: 300 };
+            },
             pointFormat: '{point.y} proyectos'
+        },
+        plotOptions: {
+            series: {
+                cursor: 'pointer',
+                point: {
+                    events: {
+                        click: function () {
+                            location.href = '/search-advanced/?dispensados_2da_votacion=' + this.category;
+                        }
+                    }
+                }
+            }
         },
         series: [
         {
@@ -140,34 +175,88 @@ $(function () {
 </script>
 
 <script>
+$(function () {
+    $('#dictamen_chart').highcharts({
+        chart: {
+            type: 'bar'
+        },
+        title: {
+            text: 'Proyectos aprobados sin dictamen'
+        },
+        xAxis: {
+            categories: {{ dictamen_categories|safe }}
+        },
+        yAxis: {
+            title: {
+                text: 'Número de proyectos'
+            }
+        },
+        legend: {
+            enabled: false
+        },
+         tooltip: {
+            positioner: function () {
+                return { x: 150, y: 300 };
+            },
+            pointFormat: '{point.y} proyectos'
+        },
+        plotOptions: {
+            series: {
+                cursor: 'pointer',
+                point: {
+                    events: {
+                        click: function () {
+                            location.href = '/search-advanced/?dictamen=' + this.category;
+                        }
+                    }
+                }
+            }
+        },
+        series: [
+        {
+            name: 'Número proyectos',
+            data: {{ dictamen_values }},
+            dataLabels: {
+                enabled: true,
+                style: {
+                    fontSize: '10px',
+                    fontFamily: 'Verdana, sans-serif',
+                }
+            }
+        }]
+    });
+});
+</script>
+
+<script>
   var g = new JustGage({
     id: "g1",
-    value: {{ percentage_without_pdf_url }},
-    label: "{{ without_pdf_url|intcomma }} proyectos",
-    min: 0,
-    max: 100,
-    levelColorsGradient: false,
-    title: "% sin PDF link"
-  });
-
-  var g = new JustGage({
-    id: "g2",
-    value: {{ percentage_without_iniciativas }},
-    label: "{{ without_iniciativas|intcomma }} proyectos",
-    min: 0,
-    max: 100,
-    levelColorsGradient: false,
-    title: "% proyectos sin fusionar"
-  });
-
-  var g = new JustGage({
-    id: "g3",
     value: {{ percentage_without_seguimientos }},
     label: "{{ without_seguimientos|intcomma }} proyectos",
     min: 0,
     max: 100,
     levelColorsGradient: false,
     title: "% sin tramitar"
+  });
+
+  var g = new JustGage({
+    id: "g2",
+    value: {{ percentage_total_in_commissions }},
+    label: "{{ total_in_commissions|intcomma }} proyectos",
+    min: 0,
+    max: 100,
+    levelColorsGradient: false,
+    title: "% en comisión \nsin dictamen"
+  });
+
+  var g = new JustGage({
+    id: "g3",
+    value: {{ percentage_dictamen_sin_votacion }},
+    label: "{{ total_dictamen_sin_votacion|intcomma }} proyectos",
+    min: 0,
+    max: 100,
+    levelColorsGradient: false,
+    title: "% proyectos con \ndictamen y sin votación\nen el pleno"
   });
 
   var g = new JustGage({

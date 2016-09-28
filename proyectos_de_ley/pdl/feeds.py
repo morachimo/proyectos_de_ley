@@ -23,7 +23,7 @@ class LatestEntriesFeed(Feed):
     feed_type = CorrectMimeTypeFeed
 
     def items(self):
-        return Proyecto.objects.order_by('-codigo')[:50]
+        return Proyecto.objects.filter(legislatura=2016).order_by('-codigo')[:50]
 
     def item_title(self, item):
         return item.titulo[:140] + "..."

@@ -43,78 +43,29 @@ rss icon by: http://glyphicons.com/
   {% block additional_head_javascript %}
   {% endblock %}
 
-  <!-- Bootstrap core CSS -->
-  <link href="http://netdna.bootstrapcdn.com/bootswatch/3.2.0/spacelab/bootstrap.min.css" rel="stylesheet">
   {% load staticfiles %}
-  <link rel="stylesheet" href="{% static 'css/pdl.css' %}">
   <link rel="shortcut icon" href="{% static 'img/favicon.ico' %}">
 
+  {% include 'pdl/css.html' %}
 
-  <style type="text/css">
-    .highlight { background-color: yellow }
-    .navbar .divider-vertical {
-    min-height: 50px;
-    margin: 0 9px;
-    border-right: 1px solid #ffffff;
-    border-left: 1px solid #f2f2f2;
-    }
-  </style>
-    {% block additional_css %}
-    {% endblock %}
+  {% block additional_css %}
+  {% endblock %}
 
 </head>
+
 <body>
 
-    <!-- Static navbar -->
-    <div class="navbar navbar-default navbar-static-top" role="navigation">
-      <div class="container">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a style="padding: 0px 0px 0px 15px" class="navbar-brand" href="/"><img
-              width="300px" height="50px" src="http://www.hiperderecho.org/wp-content/uploads/2015/01/pdl2.png" alt="Proyectos de Ley" /></a>
-        </div>
+<div id="wrap">
 
-        <div class="navbar-collapse collapse">
-          <ul class="nav navbar-nav">
-            <li id="index"><a href="/about">Sobre esta página</a></li>
-            <!-- <li><a href="#about">About</a></li>
-            <li><a href="#contact">Contact</a></li>
-            -->
-            <li class="divider-vertical"></li>
-            <li><a title="RSS feed" href="/rss.xml"><img alt="RSS feed" width="24px" height="24px" src="{% static 'img/g_rss.png' %}"/></a></li>
-            <li><a title="Estadísticas" href="/stats/"><img alt="Estadísticas" width="26px" height="25px" src="{% static 'img/g_statistics.png' %}"/></a>
-            </li>
-          </ul>
-          <form action="{% url 'pdl:search' %}"
-                method="get" class="navbar-form navbar-right" role="search">
-              <div class="form-group">
-                  <input style="width:240px;" type="text" id="query" name="q"
-                         class="form-control"
-                         autofocus="autofocus"
-                         value="{{ query }}"
-                         placeholder="Palabra clave, n&uacute;mero o autor">
-              </div>
-              <button type="submit" class="btn btn-info" id="search_button">
-                  <span class="glyphicon glyphicon-search"></span>
-                  Buscar
-              </button>
-            &nbsp;<small><a href="/search-advanced/">Búsqueda Avanzada</a></small>
-          </form>
-        </div><!--/.nav-collapse -->
-      </div>
-    </div>
+{% include 'pdl/navbar.html' %}
 
 {% block content %}
-{% endblock %}
+{% endblock content %}
 
 
+</div><!-- wrap -->
 
-<footer>
+<div id="footer">
   <div class="container">
     <hr>
 
@@ -125,25 +76,28 @@ rss icon by: http://glyphicons.com/
     </small>
 
     <small class="pull-left">
-      Desarrollado por <a href="http://aniversarioperu.me/cv/">AniversarioPerú</a>
-      <a href="https://github.com/proyectosdeley/proyectos_de_ley">v1.7.0</a>
+      Desarrollado por <a href="http://mycalesis.me/">Carlos Peña</a>
+      <a href="https://github.com/proyectosdeley/proyectos_de_ley">v2.2.0</a>
     </small>
 
     <br />
     <br />
   </div>
-</footer>
+</div>
 
 
 <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
+    {% block swagger_additional_javascript %}
+    {% endblock swagger_additional_javascript %}
     <script src="{% static 'js/jquery-1.10.2.min.js' %}"></script>
     <script src="{% static 'js/bootstrap.min.js' %}"></script>
     <script src="{% static 'js/highlighter.js' %}"></script>
     <script src="{% static 'js/pagination.js' %}"></script>
     {% block additional_javascript %}{% endblock %}
     {% block highlight_keyword %}{% endblock %}
+
 
 </body>
 </html>

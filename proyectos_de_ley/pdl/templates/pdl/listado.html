@@ -1,0 +1,51 @@
+{% extends "pdl/base.html" %}
+{% load humanize %}
+
+{% block title %}
+Proyectos de ley emitidos por el Congreso de la República del Perú | About
+{% endblock %}
+
+
+{% block content %}
+<div id="contenido" class="container">
+  {% if not pretty_items and not items_previous_legislatures %}
+    <h2>No se encontraron resultados.</h2>
+  {% else %}
+  <h1>Resultados de búsqueda: <small>{{ extra_result_msg }}
+    {% if result_count > 300 %}
+      +{{ result_count|intcomma }}
+    {% else %}
+      {{ result_count|intcomma }}
+    {% endif %}
+
+    </small><br />
+    <small>Legislatura 2011</small>
+  </h1>
+
+    {% if items_previous_legislatures %}
+      <p>
+        Se encontraron proyectos en
+        <a href="/listado?keywords={{ keywords|safe }}&list={{ items_previous_legislatures }}">
+          previas legislaturas
+        </a>
+      </p>
+    {% endif %}
+
+    {% for i in pretty_items %}
+      {{ i|safe }}
+    {% endfor %}
+  {% endif %}
+</div>
+
+    {% if last_page > 2 %}
+      {% include "pdl/pagination_search.html" %}
+    {% endif %}
+{% endblock %}
+
+
+
+{% block highlight_keyword %}
+<script>
+    $("#contenido").highlight({{ keywords|safe }});
+</script>
+{% endblock %}

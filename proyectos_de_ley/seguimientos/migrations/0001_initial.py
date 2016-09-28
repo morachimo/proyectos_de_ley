@@ -13,12 +13,21 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Iniciativas',
             fields=[
-                ('id', models.AutoField(serialize=False, auto_created=True, primary_key=True, verbose_name='ID')),
+                ('id', models.AutoField(primary_key=True, serialize=False, verbose_name='ID', auto_created=True)),
                 ('nodes', models.TextField(blank=True)),
                 ('links', models.TextField(blank=True)),
             ],
-            options={
-            },
-            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='SeguimientosJson',
+            fields=[
+                ('id', models.AutoField(primary_key=True, serialize=False, verbose_name='ID', auto_created=True)),
+                ('headline', models.TextField(blank=True)),
+                ('codigo', models.TextField(blank=True)),
+                ('date', models.TextField(blank=True)),
+                ('type', models.TextField(blank=True)),
+                ('text', models.TextField(blank=True)),
+                ('timeline', models.TextField(blank=True)),
+            ],
         ),
     ]

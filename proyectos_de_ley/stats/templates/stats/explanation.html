@@ -1,0 +1,22 @@
+{% load humanize %}
+
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-10 col-md-8 col-sm-10 col-xs-12">
+        <h2>Explicación de las estadísticas</h2>
+      </div>
+    </div><!-- row -->
+
+    <div class="row">
+      <div class="col-lg-10 col-md-8 col-sm-10 col-xs-12">
+        <h3>Proyectos con dictamen y sin votación en el pleno</h3>
+
+        El software de <b>Proyectos de Ley</b> examina la lista de seguimientos de
+        cada uno de los {{ numero_de_proyectos|intcomma }} proyectos. Se contabilizan aquellos proyectos donde
+        exista algún evento con la palabra "dictamen" pero no figuren eventos
+        con las palabras "publicado, promulgado o votación".
+        Son {{ total_dictamen_sin_votacion|intcomma }} proyectos con dictamen
+        pero sin votación en el pleno.
+      </div>
+    </div><!-- row -->
+  </div><!-- container -->

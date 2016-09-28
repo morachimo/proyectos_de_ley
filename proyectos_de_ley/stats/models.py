@@ -1,9 +1,16 @@
 from django.db import models
 
+from pdl.models import Proyecto
+
 
 class ComisionCount(models.Model):
     count = models.IntegerField()
     comision = models.CharField(max_length=250)
+
+
+class ProjectsInCommissions(models.Model):
+    project = models.ForeignKey(Proyecto)
+    commission = models.TextField()
 
 
 class Dispensed(models.Model):
@@ -29,4 +36,10 @@ class Dispensed(models.Model):
 
     dispensed_others = models.IntegerField(
         help_text="All other projects dispensed, and those with no specific reason.",
+    )
+
+
+class WithDictamenButNotVoted(models.Model):
+    proyect_id = models.IntegerField(
+        help_text="Project id as in table pdl_proyecto",
     )

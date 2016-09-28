@@ -1,0 +1,44 @@
+{% load staticfiles %}
+   <!-- Static navbar -->
+    <div class="navbar navbar-default navbar-static-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a style="padding: 0px 0px 0px 15px" class="navbar-brand" href="/"><img
+              width="300px" height="50px" src="{% static 'img/pdl2.png' %}" alt="Proyectos de Ley" /></a>
+        </div>
+
+        <div class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li id="index"><a href="/about">Sobre esta página</a></li>
+            <!-- <li><a href="#about">About</a></li>
+            <li><a href="#contact">Contact</a></li>
+            -->
+            <li class="divider-vertical"></li>
+            <li><a title="RSS feed" href="/rss.xml"><img alt="RSS feed" width="24px" height="24px" src="{% static 'img/g_rss.png' %}"/></a></li>
+            <li><a title="Estadísticas" href="/stats/"><img alt="Estadísticas" width="26px" height="25px" src="{% static 'img/g_statistics.png' %}"/></a></li>
+            <li><a title="Documentación del API" href="/docs/"><img alt="API" width="34px" height="27px" src="{% static 'img/g_cogwheels.png' %}" /></a></li>
+          </ul>
+          <form action="{% url 'pdl:search' %}"
+                method="get" class="navbar-form navbar-right" role="search">
+              <div class="form-group">
+                  <input style="width:240px;" type="text" id="query" name="q"
+                         class="form-control"
+                         autofocus="autofocus"
+                         value="{{ query }}"
+                         placeholder="Palabra clave, n&uacute;mero o autor">
+              </div>
+              <button type="submit" class="btn btn-info" id="search_button">
+                  <span class="glyphicon glyphicon-search"></span>
+                  Buscar
+              </button>
+            &nbsp;<small><a href="/search-advanced/">Búsqueda Avanzada</a></small>
+          </form>
+        </div><!--/.nav-collapse -->
+      </div>
+    </div>

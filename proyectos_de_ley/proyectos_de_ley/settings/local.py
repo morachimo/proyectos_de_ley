@@ -9,7 +9,7 @@ from unipath import Path
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-TEMPLATE_DEBUG = True
+TEMPLATES[0]['OPTIONS']['debug'] = DEBUG
 INSTALLED_APPS += ('debug_toolbar',)
 
 BASE_DIR = Path(__file__).absolute().ancestor(3)
@@ -49,3 +49,5 @@ DATABASES = {
 # optional for scrapper
 CRAWLERA_USER = get_secret("CRAWLERA_USER")
 CRAWLERA_PASS = get_secret("CRAWLERA_PASS")
+
+TESTING = False

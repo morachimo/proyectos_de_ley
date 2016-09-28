@@ -1,9 +1,7 @@
-import datetime
 import unicodedata
 
 import arrow
 from pdl.models import Proyecto
-from pdl.models import Seguimientos
 from pdl.models import Expedientes
 from pdl.utils import convert_string_to_time
 
@@ -45,37 +43,6 @@ def get_events_from_expediente(id):
     return events_with_human_date
 
 
-def get_seguimientos_from_proyecto_id(id):
-    res = Seguimientos.objects.all().filter(proyecto_id=id)
-    seguimientos = []
-    append = seguimientos.append
-    for i in res:
-        obj = {}
-        obj['startDate'] = str(i.fecha).replace("-", ",")
-        obj['headline'] = i.evento
-        append(obj)
-    return seguimientos
-
-
-def prepare_json_for_d3(item):
-    if item.iniciativas_agrupadas is None:
-        return {"nodes": ""}
-
-    nodes = []
-    append = nodes.append
-    j = 1
-    for i in item.iniciativas_agrupadas:
-        queryset = Proyecto.objects.get(codigo=i)
-        node = {"codigo": i, "url": "/p/" + queryset.short_url}
-        append(node)
-        j += 1
-
-    # sort nodes by value (codigo)
-    sorted_nodes_by_value = sorted(nodes, key=lambda k: k['codigo'])
-    data_json = {"nodes": sorted_nodes_by_value}
-    return data_json
-
-
 def hiperlink_congre(congresistas):
     # tries to make a hiperlink for each congresista name to its own webpage
     if congresistas == '':
@@ -108,11 +75,3 @@ def convert_name_to_slug(name):
         slug = unicodedata.normalize('NFKD', slug).encode('ascii', 'ignore')
         slug = str(slug, encoding="utf-8")
         return slug + "/"
-
-
-def convert_date_to_string(dateobj):
-    try:
-        fecha = datetime.datetime.strftime(dateobj, '%Y-%m-%d')
-    except TypeError:
-        return dateobj
-    return fecha

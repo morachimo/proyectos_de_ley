@@ -1,18 +1,17 @@
     <div class="container" style="text-align: center;">
       <div id="page-selection" class="container">
           <ul class="pagination pagination-mg">
-            <li>
-              <a href="/search-advanced/?date_from={{ date_from }}&date_to={{ date_to }}&page={{ first_page }}" rel="page"
+              <li><a href="/search-advanced/?query={{ query }}&date_from={{ date_from }}&date_to={{ date_to }}&congresista={{ congresista }}&grupo_parlamentario={{ grupo_parlamentario }}&comision={{ comision }}&page={{ first_page }}" rel="page"
                  class="endless_page_link">&laquo;</a>
-            </li>
+              </li>
 
             {% if items.has_previous %}
-              <li><a href="/search-advanced/?date_from={{ date_from }}&date_to={{ date_to }}&page={{ items.previous_page_number }}" rel="page"
+              <li><a href="/search-advanced/?query={{ query }}&date_from={{ date_from }}&date_to={{ date_to }}&congresista={{ congresista }}&grupo_parlamentario={{ grupo_parlamentario }}&comision={{ comision }}&page={{ items.previous_page_number }}" rel="page"
                  class="endless_page_link">&lsaquo;</a></li>
             {% endif %}
 
             {% for i in first_half %}
-              <li><a href="/search-advanced/?date_from={{ date_from }}&date_to={{ date_to }}&page={{ i }}" rel="page"
+              <li><a href="/search-advanced/?query={{ query }}&date_from={{ date_from }}&date_to={{ date_to }}&congresista={{ congresista }}&grupo_parlamentario={{ grupo_parlamentario }}&comision={{ comision }}&page={{ i }}" rel="page"
                    class="endless_page_link">{{ i }}</a></li>
             {% endfor %}
 
@@ -20,12 +19,12 @@
                 <b>{{ current }}</b></a></li>
 
             {% for i in second_half %}
-            <li><a href="/search-advanced/?date_from={{ date_from }}&date_to={{ date_to }}&page={{ i }}" rel="page"
+            <li><a href="/search-advanced/?query={{ query }}&date_from={{ date_from }}&date_to={{ date_to }}&congresista={{ congresista }}&grupo_parlamentario={{ grupo_parlamentario }}&comision={{ comision }}&page={{ i }}" rel="page"
                    class="endless_page_link">{{ i }}</a></li>
             {% endfor %}
 
             {% if items.has_next %}
-            <li><a href="/search-advanced/?date_from={{ date_from }}&date_to={{ date_to }}&page={{ items.next_page_number }}" rel="page"
+            <li><a href="/search-advanced/?query={{ query }}&date_from={{ date_from }}&date_to={{ date_to }}&congresista={{ congresista }}&grupo_parlamentario={{ grupo_parlamentario }}&comision={{ comision }}&page={{ items.next_page_number }}" rel="page"
                class="endless_page_link">&rsaquo;</a></li>
             {% endif %}
 
@@ -33,7 +32,7 @@
 
 
             <li>
-              <a href="/search-advanced/?date_from={{ date_from }}&date_to={{ date_to }}&page={{ last_page }}" rel="page"
+              <a href="/search-advanced/?query={{ query }}&date_from={{ date_from }}&date_to={{ date_to }}&congresista={{ congresista }}&grupo_parlamentario={{ grupo_parlamentario }}&comision={{ comision }}&page={{ last_page }}" rel="page"
                  class="endless_page_link">&raquo;</a>
             </li>
           </ul>

@@ -10,6 +10,7 @@ class TestViews(TestCase):
     def setUp(self):
         b = Proyecto(**{
             'codigo': '00586',
+            'legislatura': 2011,
             'numero_proyecto': '00586/2011-CR',
             'fecha_presentacion': '2010-10-10',
             'short_url': '4huj5x',
@@ -32,23 +33,3 @@ class TestViews(TestCase):
         c = Client()
         response = c.get('/p/4huj5x/seguimiento/')
         self.assertEqual(200, response.status_code)
-
-    def test_api_seguimientos(self):
-        c = Client()
-        response = c.get('/api/seguimientos/4huj5x', follow=True)
-        as_string = response.content.decode("utf-8")
-        as_dict = json.loads(as_string)
-        self.assertEqual('Proyecto No: 00586_2011-CR',
-                         as_dict['timeline']['text'])
-
-        response = c.get('/api/seguimientos/4huj5xaaaa', follow=True)
-        self.assertEqual(404, response.status_code)
-
-    def test_api_iniciativas(self):
-        c = Client()
-        response = c.get('/api/iniciativas/4huj5x', follow=True)
-        print(response.content)
-        self.assertEqual(200, response.status_code)
-
-        response = c.get('/api/iniciativas/4huj5xaaaa', follow=True)
-        self.assertEqual(404, response.status_code)
